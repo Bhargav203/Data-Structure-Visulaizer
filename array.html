@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Array Visualizer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #0066cc;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: inline-block;
+            width: 200px;
+            margin-top: 10px;
+        }
+
+        input[type="number"] {
+            padding: 8px;
+            width: 200px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #0066cc;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #004999;
+        }
+
+        table {
+            margin-top: 40px;
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .index-row td {
+            border: none;
+            padding: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #444;
+            text-align: center;
+        }
+
+        .value-row td {
+            border: 2px solid #0066cc;
+            padding: 16px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #004080;
+            background-color: #e1f0ff;
+            transition: background-color 0.5s ease;
+        }
+
+        .highlight {
+            background-color: #90ee90 !important;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #e1f0ff;
+            font-size: 14px;
+            color: #333;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Array Visualizer</h1>
+    </header>
+
+    <main>
+        <h3>Enter up to 5 elements for the array</h3>
+        <div>
+            <label>Element:</label>
+            <input type="number" id="element">
+        </div>
+        <div>
+            <label>Index (optional):</label>
+            <input type="number" id="index">
+        </div>
+
+        <button onclick="insertAtBeginning()">Insert at Beginning</button>
+        <button onclick="insertAtIndex()">Insert at Index</button>
+        <button onclick="insertAtEnd()">Insert at End</button>
+        <button onclick="deleteAtBeginning()">Delete at Beginning</button>
+        <button onclick="deleteAtIndex()">Delete at Index</button>
+        <button onclick="deleteAtEnd()">Delete at End</button>
+
+        <table id="tab"></table>
+    </main>
+
+    <footer>
+        © 2025 Array Visualizer | Data Structure Tool by C Disha and Bhargav BS
+    </footer>
+
+    <script>
+        let array = [];
+
+        function renderArray(highlightIndex = -1) {
+            const table = document.getElementById("tab");
+            let indexRow = '<tr class="index-row">';
+            let valueRow = '<tr class="value-row">';
+
+            array.forEach((val, i) => {
+                indexRow += `<td>${i}</td>`;
+                valueRow += `<td class="${i === highlightIndex ? 'highlight' : ''}">${val}</td>`;
+            });
+
+            indexRow += '</tr>';
+            valueRow += '</tr>';
+
+            table.innerHTML = indexRow + valueRow;
+        }
+
+        function insertAtBeginning() {
+            const value = document.getElementById("element").value;
+            if (value) {
+                array.unshift(Number(value));
+                renderArray(0);
+            }
+        }
+
+        function insertAtIndex() {
+            const value = document.getElementById("element").value;
+            const index = parseInt(document.getElementById("index").value);
+            if (value && !isNaN(index) && index >= 0 && index <= array.length) {
+                array.splice(index, 0, Number(value));
+                renderArray(index);
+            }
+        }
+
+        function insertAtEnd() {
+            const value = document.getElementById("element").value;
+            if (value) {
+                array.push(Number(value));
+                renderArray(array.length - 1);
+            }
+        }
+
+        function deleteAtBeginning() {
+            if (array.length > 0) {
+                array.shift();
+                renderArray();
+            }
+        }
+
+        function deleteAtIndex() {
+            const index = parseInt(document.getElementById("index").value);
+            if (!isNaN(index) && index >= 0 && index < array.length) {
+                array.splice(index, 1);
+                renderArray();
+            }
+        }
+
+        function deleteAtEnd() {
+            if (array.length > 0) {
+                array.pop();
+                renderArray();
+            }
+        }
+    </script>
+</body>
+</html>

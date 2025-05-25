@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Queue Visualizer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #0074cc;
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    main {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    label {
+      display: inline-block;
+      width: 200px;
+      margin-top: 10px;
+      text-align: right;
+    }
+
+    input[type="number"] {
+      padding: 8px;
+      width: 200px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin: 10px 10px 20px 10px;
+      padding: 10px 20px;
+      background-color: #0074cc;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    table {
+      margin-top: 40px;
+      border-collapse: collapse;
+      margin-left: auto;
+      margin-right: auto;
+      min-width: 400px;
+      position: relative;
+    }
+
+    td {
+      padding: 20px 30px;
+      border: 2px solid #0074cc;
+      background-color: #e6f0ff;
+      font-weight: bold;
+      font-size: 18px;
+      text-align: center;
+      position: relative;
+      overflow: visible;
+      min-width: 70px;
+    }
+
+    .front-label,
+    .rear-label {
+      font-size: 14px;
+      font-weight: bold;
+      color: #0074cc;
+      text-align: center;
+    }
+
+    .label-row td {
+      border: none;
+      background: none;
+      padding-bottom: 0;
+      min-width: 70px;
+    }
+
+    /* Animations */
+    .enqueue-enter {
+      animation: slideInFromRight 0.4s forwards;
+    }
+
+    .dequeue-exit {
+      animation: slideOutToLeft 0.4s forwards;
+      position: relative;
+      z-index: 10;
+    }
+
+    @keyframes slideInFromRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOutToLeft {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background-color: #e6f0ff;
+      font-size: 14px;
+      color: #333;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Queue Visualizer</h1>
+  </header>
+
+  <main>
+    <h3>Enqueue & Dequeue Operations</h3>
+    <div style="margin-bottom: 20px;">
+      <label for="enqueueInput">Enter element to enqueue:</label>
+      <input type="number" id="enqueueInput" />
+      <button onclick="enqueue()">Enqueue</button>
+      <button onclick="dequeue()">Dequeue</button>
+    </div>
+
+    <table id="tab"></table>
+  </main>
+
+  <footer>
+    © 2025 Queue Visualizer | Data Structure Tool by C Disha and Bhargav BS
+  </footer>
+
+  <script>
+    let queue = [];
+
+    function renderQueue(enqueueIndex = -1, dequeueIndex = -1) {
+      const table = document.getElementById("tab");
+      table.innerHTML = "";
+
+      // Label row
+      const labelRow = document.createElement("tr");
+      labelRow.className = "label-row";
+      for(let i=0; i<queue.length; i++) {
+        const td = document.createElement("td");
+        if(i === 0) td.className = "front-label";
+        if(i === queue.length -1) td.className = "rear-label";
+        td.textContent = i === 0 ? "Front" : (i === queue.length -1 ? "Rear" : "");
+        labelRow.appendChild(td);
+      }
+      table.appendChild(labelRow);
+
+      // Data row
+      const dataRow = document.createElement("tr");
+      for(let i=0; i<queue.length; i++) {
+        const td = document.createElement("td");
+        td.textContent = queue[i];
+
+        // Animate enqueue new element
+        if(i === enqueueIndex) {
+          td.classList.add("enqueue-enter");
+        }
+        // Animate dequeue removed element: handled outside since removed already from queue
+
+        dataRow.appendChild(td);
+      }
+      table.appendChild(dataRow);
+    }
+
+    function enqueue() {
+      const input = document.getElementById("enqueueInput");
+      const val = input.value.trim();
+      if(val === "") {
+        alert("Please enter a value to enqueue!");
+        return;
+      }
+      if(queue.length >= 5) {
+        alert("Queue is full! Maximum 5 elements.");
+        input.value = "";
+        return;
+      }
+
+      queue.push(val);
+      input.value = "";
+      renderQueue(queue.length - 1);
+    }
+
+    function dequeue() {
+      if(queue.length === 0) {
+        alert("Queue is empty! Nothing to dequeue.");
+        return;
+      }
+
+      // Animate dequeue: create temporary element to animate sliding out
+      const dequeueVal = queue[0];
+
+      // Remove front element logically
+      queue.shift();
+
+      renderQueue();
+
+      // Animate dequeue element sliding out to left from outside table
+      animateDequeue(dequeueVal);
+    }
+
+    function animateDequeue(value) {
+      const table = document.getElementById("tab");
+      const tempTd = document.createElement("td");
+      tempTd.textContent = value;
+      tempTd.style.position = "absolute";
+      tempTd.style.backgroundColor = "#e6f0ff";
+      tempTd.style.border = "2px solid #0074cc";
+      tempTd.style.fontWeight = "bold";
+      tempTd.style.fontSize = "18px";
+      tempTd.style.padding = "20px 30px";
+      tempTd.style.top = table.offsetTop + 50 + "px"; // slightly below label row
+      tempTd.style.left = table.offsetLeft + 10 + "px";
+      tempTd.style.zIndex = 1000;
+
+      document.body.appendChild(tempTd);
+
+      // Animate sliding left and fading out
+      tempTd.animate([
+        { transform: 'translateX(0)', opacity: 1 },
+        { transform: 'translateX(-150%)', opacity: 0 }
+      ], {
+        duration: 400,
+        easing: 'ease'
+      }).onfinish = () => tempTd.remove();
+    }
+
+    // Initially empty table
+    renderQueue();
+  </script>
+</body>
+</html>

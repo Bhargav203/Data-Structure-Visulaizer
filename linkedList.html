@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Linked List Visualizer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #0066cc;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: inline-block;
+            width: 180px;
+            margin-top: 10px;
+        }
+
+        input[type="number"], input[type="text"] {
+            padding: 8px;
+            width: 200px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #0066cc;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #004999;
+        }
+
+        .linked-list {
+            display: flex;
+            align-items: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .node {
+            position: relative;
+            background-color: #e1f0ff;
+            border: 2px solid #0066cc;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #004080;
+            min-width: 60px;
+            text-align: center;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .arrow {
+            font-size: 24px;
+            margin: 0 5px;
+            color: #555;
+        }
+
+        .head-tag {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            background-color: #004080;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .highlight {
+            background-color: #b3e6ff !important;
+            transform: scale(1.1);
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #e1f0ff;
+            font-size: 14px;
+            color: #333;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Linked List Visualizer</h1>
+    </header>
+
+    <main>
+        <div>
+            <input type="text" id="value" placeholder="Value">
+            <input type="number" id="position" placeholder="Position (0-based)">
+            <button onclick="addNode('begin')">Add at Beginning</button>
+            <button onclick="addNode('position')">Add at Position</button>
+            <button onclick="addNode('end')">Add at End</button>
+            <button onclick="deleteNode('begin')">Delete from Beginning</button>
+            <button onclick="deleteNode('position')">Delete from Position</button>
+            <button onclick="deleteNode('end')">Delete from End</button>
+        </div>
+
+        <div class="linked-list" id="list"></div>
+    </main>
+
+    <footer>
+        © 2025 Linked List Visualizer | Data Structure Tool by C Disha and Bhargav BS
+    </footer>
+
+    <script>
+        let linkedList = [];
+
+        function renderList() {
+            const listContainer = document.getElementById('list');
+            listContainer.innerHTML = '';
+            linkedList.forEach((value, index) => {
+                const node = document.createElement('div');
+                node.className = 'node';
+                node.textContent = value;
+                if (index === 0) {
+                    const head = document.createElement('span');
+                    head.className = 'head-tag';
+                    head.textContent = 'HEAD';
+                    node.appendChild(head);
+                }
+                listContainer.appendChild(node);
+                if (index < linkedList.length - 1) {
+                    const arrow = document.createElement('span');
+                    arrow.className = 'arrow';
+                    arrow.innerHTML = '&#8594;';
+                    listContainer.appendChild(arrow);
+                }
+            });
+            if (linkedList.length > 0) {
+                const arrow = document.createElement('span');
+                arrow.className = 'arrow';
+                arrow.innerHTML = '&#8594;';
+                listContainer.appendChild(arrow);
+                const nullNode = document.createElement('div');
+                nullNode.className = 'node';
+                nullNode.textContent = 'null';
+                listContainer.appendChild(nullNode);
+            }
+        }
+
+        function addNode(type) {
+            const value = document.getElementById('value').value;
+            const pos = parseInt(document.getElementById('position').value);
+            if (!value) return alert('Enter value!');
+
+            if (type === 'begin') {
+                linkedList.unshift(value);
+            } else if (type === 'end') {
+                linkedList.push(value);
+            } else if (type === 'position') {
+                if (isNaN(pos) || pos < 0 || pos > linkedList.length) return alert('Invalid position');
+                linkedList.splice(pos, 0, value);
+            }
+
+            renderList();
+            animateHighlight();
+        }
+
+        function deleteNode(type) {
+            const pos = parseInt(document.getElementById('position').value);
+
+            if (linkedList.length === 0) return alert('List is empty');
+
+            if (type === 'begin') {
+                linkedList.shift();
+            } else if (type === 'end') {
+                linkedList.pop();
+            } else if (type === 'position') {
+                if (isNaN(pos) || pos < 0 || pos >= linkedList.length) return alert('Invalid position');
+                linkedList.splice(pos, 1);
+            }
+
+            renderList();
+            animateHighlight();
+        }
+
+        function animateHighlight() {
+            const nodes = document.querySelectorAll('.node');
+            nodes.forEach(node => {
+                node.classList.add('highlight');
+                setTimeout(() => node.classList.remove('highlight'), 500);
+            });
+        }
+
+        renderList();
+    </script>
+</body>
+</html>

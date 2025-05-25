@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stack Visualizer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #4a90e2;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    main {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: inline-block;
+      width: 200px;
+      margin-top: 10px;
+    }
+
+    input[type="number"] {
+      padding: 8px;
+      width: 200px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin: 10px 10px 20px 0;
+      padding: 10px 20px;
+      background-color: #4a90e2;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #357ab8;
+    }
+
+    .stack-container {
+      margin-top: 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    table {
+      border-collapse: collapse;
+      position: relative;
+    }
+
+    td {
+      padding: 20px 40px;
+      border: 2px solid #4a90e2;
+      background-color: #e3f0ff;
+      font-weight: bold;
+      font-size: 18px;
+      text-align: center;
+      position: relative;
+      transition: all 0.3s ease-in-out;
+    }
+
+    /* The "top" label positioned outside the cell */
+    .top-label {
+      position: absolute;
+      right: -60px; /* outside the box on the right */
+      top: 50%;
+      transform: translateY(-50%);
+      font-weight: bold;
+      font-size: 16px;
+      color: #4a90e2;
+      user-select: none;
+      pointer-events: none;
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Stack Visualizer</h1>
+  </header>
+
+  <main>
+    <div>
+      <label>Enter an element:</label>
+      <input type="number" id="stackInput" />
+      <button onclick="pushStack()">Push</button>
+      <button onclick="popStack()">Pop</button>
+    </div>
+
+    <div class="stack-container">
+      <table id="tab"></table>
+    </div>
+  </main>
+
+  <script>
+    let stack = [];
+
+    function updateStackDisplay() {
+      const table = document.getElementById("tab");
+      table.innerHTML = "";
+
+      for (let i = stack.length - 1; i >= 0; i--) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.textContent = stack[i];
+
+        if (i === stack.length - 1) {
+          // Add the top label outside the box
+          const topLabel = document.createElement("span");
+          topLabel.textContent = "← top";
+          topLabel.className = "top-label";
+          td.style.position = "relative"; // make sure td is relative for absolute span
+          td.appendChild(topLabel);
+        }
+
+        tr.appendChild(td);
+        table.appendChild(tr);
+      }
+    }
+
+    function pushStack() {
+      const input = document.getElementById("stackInput");
+      const value = input.value.trim();
+      if (value !== "") {
+        stack.push(value);
+        input.value = "";
+        updateStackDisplay();
+      }
+    }
+
+    function popStack() {
+      if (stack.length > 0) {
+        stack.pop();
+        updateStackDisplay();
+      }
+    }
+  </script>
+</body>
+</html>
